@@ -1,8 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import TableHeader from "./tableHeader";
-import TableBody from "./tableBody";
 import BookMark from "./bookmark";
+import QualitiesList from "./qualitiesList";
+import Table from "./table";
+import { NavLink } from "react-router-dom";
 
 const UserTablet = ({
     users,
@@ -13,8 +14,17 @@ const UserTablet = ({
     ...rest
 }) => {
     const columns = {
-        name: { path: "name", name: "Имя" },
-        qualities: { name: "Качества" },
+        name: {
+            path: "name",
+            name: "Имя",
+            component: (user) => (
+                <NavLink to={`/users/${user._id}`}>{user.name}</NavLink>
+            )
+        },
+        qualities: {
+            name: "Качества",
+            component: (user) => <QualitiesList qualities={user.qualities} />
+        },
         professions: { path: "professions.name", name: "Профессия" },
         completedMeetings: {
             path: "completedMeetings",
@@ -44,10 +54,12 @@ const UserTablet = ({
     };
 
     return (
-        <table className="table">
-            <TableHeader {...{ onSort, selectedSort, columns }} />
-            <TableBody {...{ columns, data: users }} />
-        </table>
+        <Table
+            onSort={onSort}
+            selectedSort={selectedSort}
+            columns={columns}
+            data={users}
+        />
     );
 };
 
