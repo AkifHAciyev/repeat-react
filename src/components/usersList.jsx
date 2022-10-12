@@ -11,16 +11,19 @@ import _ from "lodash";
 const UsersList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [professions, setProfession] = useState();
+    const [searchQuery, setSearchQuery] = useState("");
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ iter: "name", order: "asc" });
-
     const [users, setUsers] = useState();
+
     useEffect(() => {
         api.users.fetchAll().then((data) => setUsers(data));
     }, []);
+
     const handleDelete = (userId) => {
         setUsers(users.filter((user) => user._id !== userId));
     };
+
     const handleToggleBookMark = (id) => {
         const newArray = users.map((user) => {
             if (user._id === id) {
@@ -33,14 +36,17 @@ const UsersList = () => {
     };
 
     const pageSize = 8;
+
     useEffect(() => {
         api.professions.fetchAll().then((data) => setProfession(data));
     }, []);
+
     useEffect(() => {
         setCurrentPage(1);
-    }, [selectedProf]);
+    }, [selectedProf, searchQuery]);
 
     const handleProfessionSelect = (item) => {
+        if (searchQuery !== "") setSearchQuery("");
         setSelectedProf(item);
     };
 
@@ -48,12 +54,24 @@ const UsersList = () => {
         setCurrentPage(pageIndex);
     };
 
+    const handleSearchQuery = ({ target }) => {
+        setSelectedProf(undefined);
+        setSearchQuery(target.value);
+    };
+
     const handleSort = (item) => {
         setSortBy(item);
     };
 
     if (users) {
-        const filteredUsers = selectedProf
+        const filteredUsers = searchQuery
+            ? users.filter(
+                  (user) =>
+                      user.name
+                          .toLowerCase()
+                          .indexOf(searchQuery.toLowerCase()) !== -1
+              )
+            : selectedProf
             ? users.filter((user) => {
                   return (
                       JSON.stringify(user.profession) ===
@@ -86,13 +104,19 @@ const UsersList = () => {
                             className="btn btn-secondary mt-2"
                             onClick={clearFilter}
                         >
-                            {" "}
                             Очистить
                         </button>
                     </div>
                 )}
                 <div className="d-flex flex-column">
                     <SearchStatus length={count} />
+                    <input
+                        type="text"
+                        name="searchQuery"
+                        placeholder="Search..."
+                        onChange={handleSearchQuery}
+                        value={searchQuery}
+                    />
                     {count > 0 && (
                         <UserTablet
                             users={usersCrop}
