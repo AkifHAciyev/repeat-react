@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import BookMark from "./bookmark";
-import QualitiesList from "./qualitiesList";
-import Table from "./table";
+import BookMark from "../common/bookmark";
+import Qualities from "./qualities/qualitiesList";
+import Table from "../common/table/index";
 import { NavLink } from "react-router-dom";
 
 const UserTablet = ({
@@ -23,7 +23,7 @@ const UserTablet = ({
         },
         qualities: {
             name: "Качества",
-            component: (user) => <QualitiesList qualities={user.qualities} />
+            component: (user) => <Qualities qualities={user.qualities} />
         },
         professions: { path: "professions.name", name: "Профессия" },
         completedMeetings: {
